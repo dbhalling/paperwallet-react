@@ -1,13 +1,14 @@
 import axios from 'axios';
 
-export const litecoinApi = async (addresses, resolve, reject) => {
+export const dashApi = async (addresses, resolve, reject) => {
   let addressesBalance = {};
   let addressRequests = [];
   
-  addresses.forEach(address => {
-    addressRequests.push("https://api.blockchair.com/litecoin/dashboards/address/" + address);
-  });
   
+  for (let  j=0; j<addresses.length; j++ )
+    addressRequests.push("https://api.blockcypher.com/v1/dash/main/addrs/" + 
+      addresses[j] + "/balance");
+    
   function delay() {
     return new Promise(resolve => {
       setTimeout(() => resolve(), 2000);
@@ -18,9 +19,9 @@ export const litecoinApi = async (addresses, resolve, reject) => {
     axios.get(addressRequests)
     .then((res) => {
       console.log(res);
-      const data = res.data.data[addresses];
-      console.log('data', data.address.balance);
-      addressesBalance[addresses] = data.address.balance / 100000000;
+      const data = res.data.balance;
+      console.log('data', data);
+      addressesBalance[addresses] = data / 100000000;
     }).catch((error) => {
       console.log(error);
     });
@@ -32,4 +33,6 @@ export const litecoinApi = async (addresses, resolve, reject) => {
     await delay();
   }
   resolve(addressesBalance);
+  console.log('addressesBalance', addressesBalance)
 };
+  
